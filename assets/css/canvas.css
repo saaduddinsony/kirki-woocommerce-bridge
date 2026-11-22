@@ -1,0 +1,10 @@
+/* Kirki WooCommerce Bridge – adjustments inside the Kirki editor canvas,
+   where WooCommerce's frontend scripts do not run. */
+.kwi-editor-host .woocommerce-product-gallery { opacity: 1 !important; }
+.kwi-editor-host .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:not(:first-child) {
+	display: inline-block; width: calc(25% - 6px); margin: 8px 8px 0 0;
+}
+.kwi-editor-host .woocommerce-product-gallery__trigger { display: none; }
+.kwi-editor-host .woocommerce-tabs .panel:not(:first-of-type) { display: none; }
+.kwi-editor-host a, .kwi-editor-host button, .kwi-editor-host input, .kwi-editor-host select { pointer-events: none; }
+.kwi-editor-host .kwi-mini-cart__drawer { display: none !important; }

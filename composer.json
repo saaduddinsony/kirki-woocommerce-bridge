@@ -1,0 +1,24 @@
+{
+	"name": "saaduddinsony/kirki-woocommerce-bridge",
+	"description": "WooCommerce elements, dynamic data and templates for the Kirki builder.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [ { "name": "S M Saad Uddin" } ],
+	"require": { "php": ">=7.4" },
+	"require-dev": {
+		"phpunit/phpunit": "^9.6",
+		"yoast/phpunit-polyfills": "^2.0",
+		"wp-coding-standards/wpcs": "^3.1",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+	},
+	"config": {
+		"allow-plugins": { "dealerdirect/phpcodesniffer-composer-installer": true },
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"test": "phpunit"
+	}
+}
