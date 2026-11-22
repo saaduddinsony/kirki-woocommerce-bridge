@@ -91,6 +91,10 @@ if [ -z "$(wp option get kwt_seed_ids 2>/dev/null || true)" ]; then
 fi
 wp rewrite flush >/dev/null
 
+# Start the debug log fresh: entries so far come from WP-CLI installing a
+# brand-new site (e.g. wp_guess_url() without HTTP_HOST), not from the tests.
+: > "$SITE/wp-content/debug.log"
+
 echo "WordPress ready in $SITE"
 echo "KIRKI_WOO_WP_LOAD=$SITE/wp-load.php"
 
@@ -100,9 +104,18 @@ if [ "${START_SERVER:-1}" = "1" ]; then
 		curl -fs -o /dev/null "$URL/" && break
 		sleep 1
 	done
-	# Warm-up requests: some plugins (e.g. Kirki eCommerce) create their tables
-	# on the first web request rather than on WP-CLI activation.
-	for path in / /wp-login.php /wp-json/ /shop/; do
+	# Warm-up: sign in once and open wp-admin, like an admin would after
+	# activating plugins. Some plugins only finish installing on admin_init
+	# (e.g. Kirki eCommerce creates its database tables there, not on WP-CLI
+	# activation; until then creating a WordPress user throws in its
+	# user_register hook).
+	JAR="$TARGET/warmup-cookies.txt"
+	curl -s -o /dev/null -c "$JAR" "$URL/wp-login.php" || true
+	curl -s -o /dev/null -b "$JAR" -c "$JAR" -d "log=$ADMIN_USER" --data-urlencode "pwd=$ADMIN_PASS" \
+		-d "wp-submit=Log+In" -d "testcookie=1" -d "redirect_to=$URL/wp-admin/" "$URL/wp-login.php" || true
+	curl -s -o /dev/null -L -b "$JAR" -c "$JAR" "$URL/wp-admin/" || true
+	rm -f "$JAR"
+	for path in / /shop/ /wp-json/; do
 		curl -s -o /dev/null "$URL$path" || true
 	done
 	echo "Serving $URL (log: $TARGET/server.log)"
